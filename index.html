@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Experiencia WebAR - Robot 3D</title>
+    
+    <!-- Importar model-viewer desde CDN oficial -->
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+    
+    <style>
+        /* Reset y configuración base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Model Viewer - Pantalla completa */
+        model-viewer {
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        }
+
+        /* Hotspot - Botón rojo circular */
+        .hotspot {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #ff4757, #c0392b);
+            border: 3px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 
+                0 0 15px rgba(255, 71, 87, 0.6),
+                0 0 30px rgba(255, 71, 87, 0.3),
+                0 4px 15px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+
+        .hotspot:hover {
+            transform: scale(1.2);
+            box-shadow: 
+                0 0 25px rgba(255, 71, 87, 0.8),
+                0 0 50px rgba(255, 71, 87, 0.4),
+                0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Animación de pulso */
+        @keyframes pulse {
+            0% {
+                box-shadow: 
+                    0 0 15px rgba(255, 71, 87, 0.6),
+                    0 0 30px rgba(255, 71, 87, 0.3),
+                    0 4px 15px rgba(0, 0, 0, 0.3);
+            }
+            50% {
+                box-shadow: 
+                    0 0 25px rgba(255, 71, 87, 0.8),
+                    0 0 45px rgba(255, 71, 87, 0.5),
+                    0 4px 15px rgba(0, 0, 0, 0.3);
+            }
+            100% {
+                box-shadow: 
+                    0 0 15px rgba(255, 71, 87, 0.6),
+                    0 0 30px rgba(255, 71, 87, 0.3),
+                    0 4px 15px rgba(0, 0, 0, 0.3);
+            }
+        }
+
+        /* Icono dentro del hotspot */
+        .hotspot::before {
+            content: '+';
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Cuadro de información - Glassmorphism */
+        .info-card {
+            position: absolute;
+            left: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            min-width: 220px;
+            padding: 20px 24px;
+            
+            /* Efecto Glassmorphism */
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 16px;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            
+            /* Oculto por defecto */
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-50%) translateX(-10px);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            pointer-events: none;
+        }
+
+        /* Mostrar info-card cuando el hotspot tiene hover o focus */
+        .hotspot:hover .info-card,
+        .hotspot:focus .info-card,
+        .hotspot.active .info-card {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(-50%) translateX(0);
+        }
+
+        /* Flecha del tooltip */
+        .info-card::before {
+            content: '';
+            position: absolute;
+            left: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-width: 10px;
+            border-style: solid;
+            border-color: transparent rgba(255, 255, 255, 0.2) transparent transparent;
+        }
+
+        /* Título del info-card */
+        .info-card h3 {
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            letter-spacing: 0.5px;
+        }
+
+        /* Datos del info-card */
+        .info-card .data-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .info-card .data-item:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Íconos/bullets para los datos */
+        .info-card .data-item::before {
+            content: '◆';
+            margin-right: 10px;
+            color: #ff4757;
+            font-size: 8px;
+            text-shadow: 0 0 10px rgba(255, 71, 87, 0.5);
+        }
+
+        /* Estilo para valores especiales */
+        .info-card .value {
+            color: #00d9ff;
+            font-weight: 600;
+            text-shadow: 0 0 8px rgba(0, 217, 255, 0.3);
+        }
+
+        .info-card .status-safe {
+            color: #2ecc71;
+            font-weight: 600;
+            text-shadow: 0 0 8px rgba(46, 204, 113, 0.3);
+        }
+
+        /* Instrucciones AR en pantalla */
+        .ar-instructions {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 30px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 13px;
+            text-align: center;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .info-card {
+                min-width: 180px;
+                padding: 16px 18px;
+                left: 35px;
+            }
+
+            .info-card h3 {
+                font-size: 14px;
+            }
+
+            .info-card .data-item {
+                font-size: 12px;
+            }
+
+            .hotspot {
+                width: 24px;
+                height: 24px;
+            }
+
+            .hotspot::before {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Model Viewer con AR habilitado -->
+    <model-viewer
+        src="robot.glb"
+        alt="Modelo 3D de Robot en Realidad Aumentada"
+        ar
+        ar-modes="webxr scene-viewer quick-look"
+        camera-controls
+        auto-rotate
+        shadow-intensity="1"
+        exposure="0.8"
+        ar-scale="auto"
+    >
+        <!-- Hotspot interactivo sobre el modelo -->
+        <button 
+            class="hotspot" 
+            slot="hotspot-analysis" 
+            data-position="0m 1.2m 0.1m" 
+            data-normal="0m 0m 1m"
+            aria-label="Ver información de análisis"
+            onclick="this.classList.toggle('active')"
+        >
+            <!-- Cuadro de información Glassmorphism -->
+            <div class="info-card">
+                <h3>🔬 Análisis Nivel 10</h3>
+                <div class="data-item">
+                    Curvatura (κ) ≈ <span class="value">&nbsp;0.213</span>
+                </div>
+                <div class="data-item">
+                    Trayectoria: <span class="status-safe">&nbsp;Suave/Segura</span>
+                </div>
+            </div>
+        </button>
+
+        <!-- Instrucciones para el usuario -->
+        <div class="ar-instructions">
+            📱 Toca el ícono AR para ver en tu espacio • 🖱️ Arrastra para rotar
+        </div>
+    </model-viewer>
+
+    <script>
+        // Manejar interacción táctil en dispositivos móviles
+        document.querySelectorAll('.hotspot').forEach(hotspot => {
+            hotspot.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                this.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html>
