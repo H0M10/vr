@@ -4,9 +4,7 @@ Experiencia de Realidad Aumentada (WebAR) interactiva utilizando Google Model Vi
 
 ## 🌐 Demo en Vivo
 
-👉 **[Ver Demo](https://TU-USUARIO.github.io/TU-REPOSITORIO/)**
-
-> Reemplaza `TU-USUARIO` y `TU-REPOSITORIO` con tus datos de GitHub.
+👉 **[Ver Demo](https://h0m10.github.io/vr/)**
 
 ## ✨ Características
 
