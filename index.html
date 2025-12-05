@@ -257,6 +257,76 @@
             display: none !important;
         }
 
+        /* Panel de controles de animación */
+        .animation-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 999998;
+        }
+
+        .control-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .control-btn.active {
+            background: linear-gradient(135deg, #ff4757, #c0392b);
+            box-shadow: 0 0 25px rgba(255, 71, 87, 0.6);
+        }
+
+        /* Indicador de modo cinemático */
+        .cinematic-indicator {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 25px;
+            background: linear-gradient(135deg, rgba(255, 71, 87, 0.9), rgba(192, 57, 43, 0.9));
+            border-radius: 30px;
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            z-index: 999998;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
+            box-shadow: 0 4px 20px rgba(255, 71, 87, 0.5);
+        }
+
+        .cinematic-indicator.show {
+            opacity: 1;
+            visibility: visible;
+            animation: cinematicPulse 2s infinite;
+        }
+
+        @keyframes cinematicPulse {
+            0%, 100% { box-shadow: 0 4px 20px rgba(255, 71, 87, 0.5); }
+            50% { box-shadow: 0 4px 35px rgba(255, 71, 87, 0.8); }
+        }
+
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .info-card {
@@ -294,11 +364,17 @@
         ar-modes="webxr scene-viewer quick-look"
         camera-controls
         auto-rotate
+        autoplay
+        animation-name=""
         shadow-intensity="1"
         exposure="0.8"
         ar-scale="auto"
         enable-pan
         ar-placement="floor"
+        camera-orbit="0deg 75deg 2.5m"
+        min-camera-orbit="auto auto auto"
+        max-camera-orbit="auto auto auto"
+        interpolation-decay="100"
     >
         <!-- Hotspot interactivo sobre el modelo -->
         <button 
@@ -327,13 +403,43 @@
         🖱️ Arrastra para rotar • 📍 Toca el punto rojo
     </div>
 
+    <!-- Panel de control de animaciones -->
+    <div class="animation-controls" id="animation-panel">
+        <button class="control-btn" id="btn-cinematic" title="Cinemática">
+            🎬
+        </button>
+        <button class="control-btn" id="btn-play-anim" title="Play/Pause Animación">
+            ▶️
+        </button>
+        <button class="control-btn" id="btn-reset" title="Resetear Vista">
+            🔄
+        </button>
+    </div>
+
+    <!-- Indicador de cinemática activa -->
+    <div class="cinematic-indicator" id="cinematic-indicator">
+        🎬 MODO CINEMÁTICO
+    </div>
+
     <!-- Botón AR FUERA del model-viewer para que siempre esté visible -->
     <button class="ar-button-fixed" id="ar-btn">
         📱 VER EN AR
     </button>
 
     <script>
-        // Manejar interacción táctil en dispositivos móviles
+        const modelViewer = document.getElementById('model-viewer');
+        const arBtn = document.getElementById('ar-btn');
+        const btnCinematic = document.getElementById('btn-cinematic');
+        const btnPlayAnim = document.getElementById('btn-play-anim');
+        const btnReset = document.getElementById('btn-reset');
+        const cinematicIndicator = document.getElementById('cinematic-indicator');
+        
+        let cinematicMode = false;
+        let cinematicInterval = null;
+        let animationPlaying = false;
+        let currentAngle = 0;
+
+        // ===== HOTSPOT INTERACCIÓN =====
         document.querySelectorAll('.hotspot').forEach(hotspot => {
             hotspot.addEventListener('touchstart', function(e) {
                 e.preventDefault();
@@ -341,10 +447,7 @@
             });
         });
 
-        // Conectar botón externo con model-viewer AR
-        const arBtn = document.getElementById('ar-btn');
-        const modelViewer = document.getElementById('model-viewer');
-        
+        // ===== BOTÓN AR =====
         if (arBtn && modelViewer) {
             arBtn.addEventListener('click', () => {
                 if (modelViewer.canActivateAR) {
@@ -354,6 +457,126 @@
                 }
             });
         }
+
+        // ===== DETECTAR ANIMACIONES DEL MODELO =====
+        modelViewer.addEventListener('load', () => {
+            const animations = modelViewer.availableAnimations;
+            console.log('Animaciones disponibles:', animations);
+            
+            if (animations && animations.length > 0) {
+                // Si hay animaciones, reproducir la primera
+                modelViewer.animationName = animations[0];
+                modelViewer.play();
+                animationPlaying = true;
+                btnPlayAnim.textContent = '⏸️';
+                console.log('Reproduciendo animación:', animations[0]);
+            } else {
+                console.log('No hay animaciones en el modelo. Usando efectos de cámara.');
+            }
+        });
+
+        // ===== BOTÓN PLAY/PAUSE ANIMACIÓN =====
+        btnPlayAnim.addEventListener('click', () => {
+            if (animationPlaying) {
+                modelViewer.pause();
+                btnPlayAnim.textContent = '▶️';
+                animationPlaying = false;
+            } else {
+                modelViewer.play();
+                btnPlayAnim.textContent = '⏸️';
+                animationPlaying = true;
+            }
+        });
+
+        // ===== MODO CINEMÁTICO (Cámara épica) =====
+        btnCinematic.addEventListener('click', () => {
+            cinematicMode = !cinematicMode;
+            btnCinematic.classList.toggle('active', cinematicMode);
+            
+            if (cinematicMode) {
+                startCinematicMode();
+                cinematicIndicator.classList.add('show');
+            } else {
+                stopCinematicMode();
+                cinematicIndicator.classList.remove('show');
+            }
+        });
+
+        function startCinematicMode() {
+            // Desactivar auto-rotate para control manual
+            modelViewer.autoRotate = false;
+            currentAngle = 0;
+            
+            // Secuencia cinemática
+            const cinematicSequence = [
+                { orbit: '0deg 90deg 3m', duration: 2000 },      // Vista frontal alejada
+                { orbit: '45deg 70deg 2m', duration: 2000 },     // Diagonal arriba
+                { orbit: '90deg 80deg 1.5m', duration: 2000 },   // Lateral cercano
+                { orbit: '135deg 60deg 2.5m', duration: 2000 },  // Diagonal trasera
+                { orbit: '180deg 85deg 2m', duration: 2000 },    // Vista trasera
+                { orbit: '225deg 75deg 1.8m', duration: 2000 },  // Otra diagonal
+                { orbit: '270deg 90deg 2.2m', duration: 2000 },  // Otro lateral
+                { orbit: '315deg 65deg 2m', duration: 2000 },    // Diagonal
+                { orbit: '360deg 80deg 2.5m', duration: 2000 },  // Vuelta completa
+            ];
+            
+            let step = 0;
+            
+            function nextStep() {
+                if (!cinematicMode) return;
+                
+                const current = cinematicSequence[step];
+                modelViewer.cameraOrbit = current.orbit;
+                
+                step = (step + 1) % cinematicSequence.length;
+                
+                cinematicInterval = setTimeout(nextStep, current.duration);
+            }
+            
+            nextStep();
+        }
+
+        function stopCinematicMode() {
+            if (cinematicInterval) {
+                clearTimeout(cinematicInterval);
+                cinematicInterval = null;
+            }
+            modelViewer.autoRotate = true;
+        }
+
+        // ===== BOTÓN RESET =====
+        btnReset.addEventListener('click', () => {
+            // Detener cinemática si está activa
+            if (cinematicMode) {
+                cinematicMode = false;
+                btnCinematic.classList.remove('active');
+                cinematicIndicator.classList.remove('show');
+                stopCinematicMode();
+            }
+            
+            // Resetear cámara
+            modelViewer.cameraOrbit = '0deg 75deg 2.5m';
+            modelViewer.autoRotate = true;
+            
+            // Reiniciar animación si existe
+            if (modelViewer.availableAnimations?.length > 0) {
+                modelViewer.currentTime = 0;
+                modelViewer.play();
+                animationPlaying = true;
+                btnPlayAnim.textContent = '⏸️';
+            }
+        });
+
+        // ===== DETENER CINEMÁTICA AL INTERACTUAR =====
+        modelViewer.addEventListener('camera-change', (e) => {
+            // Si el usuario mueve la cámara manualmente, detener cinemática
+            if (e.detail.source === 'user-interaction' && cinematicMode) {
+                cinematicMode = false;
+                btnCinematic.classList.remove('active');
+                cinematicIndicator.classList.remove('show');
+                stopCinematicMode();
+            }
+        });
     </script>
 </body>
 </html>
