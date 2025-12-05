@@ -203,6 +203,44 @@
             z-index: 100;
         }
 
+        /* Botón AR personalizado */
+        #ar-button {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            padding: 14px 20px;
+            background: linear-gradient(135deg, #ff4757, #ee5a6f);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 
+                0 4px 15px rgba(255, 71, 87, 0.4),
+                0 0 20px rgba(255, 71, 87, 0.2);
+            transition: all 0.3s ease;
+            z-index: 101;
+            letter-spacing: 0.5px;
+            display: none;
+        }
+
+        #ar-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 6px 20px rgba(255, 71, 87, 0.6),
+                0 0 30px rgba(255, 71, 87, 0.3);
+        }
+
+        #ar-button:active {
+            transform: translateY(0);
+        }
+
+        /* Mostrar botón AR solo si está disponible */
+        model-viewer[ar] #ar-button {
+            display: block;
+        }
+
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .info-card {
@@ -233,6 +271,7 @@
 <body>
     <!-- Model Viewer con AR habilitado -->
     <model-viewer
+        id="model-viewer"
         src="robot.glb"
         alt="Modelo 3D de Robot en Realidad Aumentada"
         ar
@@ -242,6 +281,8 @@
         shadow-intensity="1"
         exposure="0.8"
         ar-scale="auto"
+        enable-pan
+        ar-placement="floor"
     >
         <!-- Hotspot interactivo sobre el modelo -->
         <button 
@@ -264,9 +305,18 @@
             </div>
         </button>
 
+        <!-- Botón AR personalizado -->
+        <button 
+            id="ar-button"
+            class="ar-button"
+            slot="ar-button"
+        >
+            📱 Ver en AR
+        </button>
+
         <!-- Instrucciones para el usuario -->
         <div class="ar-instructions">
-            📱 Toca el ícono AR para ver en tu espacio • 🖱️ Arrastra para rotar
+            📱 Toca "Ver en AR" • 🖱️ Arrastra para rotar
         </div>
     </model-viewer>
 
@@ -278,6 +328,26 @@
                 this.classList.toggle('active');
             });
         });
+
+        // Activar AR cuando se carga el modelo
+        const modelViewer = document.querySelector('model-viewer');
+        const arButton = document.querySelector('#ar-button');
+
+        if (modelViewer) {
+            // Mostrar botón AR cuando está disponible
+            modelViewer.addEventListener('ar-status-changed', (event) => {
+                if (event.detail.canActivateAR) {
+                    if (arButton) arButton.style.display = 'block';
+                }
+            });
+
+            // Activar AR al hacer clic
+            if (arButton) {
+                arButton.addEventListener('click', () => {
+                    modelViewer.activateAR();
+                });
+            }
+        }
     </script>
 </body>
 </html>
