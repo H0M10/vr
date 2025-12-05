@@ -228,7 +228,7 @@
             padding: 20px;
             color: white;
             z-index: 1000;
-            max-width: 280px;
+            max-width: 320px;
             font-size: 13px;
         }
 
@@ -247,6 +247,166 @@
         .engineering-panel .emphasis {
             color: #00d9ff;
             font-weight: 600;
+        }
+
+        /* Panel de descomposición de aceleración */
+        .accel-decomp {
+            position: fixed;
+            bottom: 30px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(255, 71, 87, 0.5);
+            border-radius: 16px;
+            padding: 20px;
+            color: white;
+            z-index: 1000;
+            min-width: 280px;
+        }
+
+        .accel-decomp h3 {
+            color: #ff4757;
+            margin-bottom: 15px;
+            font-size: 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+        }
+
+        .accel-component {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .accel-component .label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .accel-component .color-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .accel-component .value {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+        }
+
+        .formula-small {
+            font-size: 11px;
+            color: #666;
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Indicador de t₀ */
+        .t0-indicator {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.95), rgba(255, 152, 0, 0.95));
+            padding: 20px 40px;
+            border-radius: 20px;
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 40px rgba(255, 193, 7, 0.5);
+            text-align: center;
+        }
+
+        .t0-indicator.show {
+            opacity: 1;
+            visibility: visible;
+            animation: t0Pulse 0.8s ease;
+        }
+
+        .t0-indicator .sub {
+            font-size: 14px;
+            font-weight: 400;
+            margin-top: 5px;
+            opacity: 0.9;
+        }
+
+        @keyframes t0Pulse {
+            0% { transform: translate(-50%, -50%) scale(0.8); }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+
+        /* Panel de relación ||a|| y rapidez */
+        .relation-panel {
+            position: fixed;
+            top: 180px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(46, 204, 113, 0.5);
+            border-radius: 16px;
+            padding: 15px 20px;
+            color: white;
+            z-index: 1000;
+            max-width: 250px;
+            font-size: 12px;
+        }
+
+        .relation-panel h4 {
+            color: #2ecc71;
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+
+        .relation-formula {
+            background: rgba(46, 204, 113, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+
+        .relation-bar {
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            margin: 8px 0;
+            overflow: hidden;
+        }
+
+        .relation-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        /* Círculo osculador label */
+        .osculating-label {
+            position: fixed;
+            top: 320px;
+            right: 20px;
+            background: rgba(138, 43, 226, 0.9);
+            padding: 10px 15px;
+            border-radius: 10px;
+            color: white;
+            font-size: 12px;
+            z-index: 1000;
+        }
+
+        .osculating-label .radius-value {
+            font-size: 18px;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
         }
 
         /* Instrucciones */
@@ -349,32 +509,101 @@
         </div>
         <div class="legend-item">
             <div class="legend-color" style="background: #2ecc71;"></div>
-            <span>Vector Velocidad v(t)</span>
+            <span>Velocidad v(t)</span>
         </div>
         <div class="legend-item">
             <div class="legend-color" style="background: #ff4757;"></div>
-            <span>Vector Aceleración a(t)</span>
+            <span>Aceleración a(t)</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #e74c3c;"></div>
+            <span>a<sub>T</sub> (tangencial)</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #9b59b6;"></div>
+            <span>a<sub>N</sub> (normal)</span>
         </div>
         <div class="legend-item">
             <div class="legend-color" style="background: #ffc107;"></div>
-            <span>Punto t₀ (curvatura)</span>
+            <span>Punto móvil</span>
         </div>
     </div>
 
     <!-- Panel de análisis de ingeniería -->
     <div class="engineering-panel">
-        <h3>⚙️ Análisis de Ingeniería</h3>
+        <h3>⚙️ Impacto en Ingeniería</h3>
         <p>
-            La <span class="emphasis">aceleración</span> tiene componente centrípeta que depende de la <span class="emphasis">rapidez²/radio</span>.
+            La <span class="emphasis">aceleración centrípeta</span> depende de:
         </p>
+        <div class="formula-small">
+            a<sub>N</sub> = κ · ||v||² = v²/ρ
+        </div>
         <p>
-            Una curvatura baja (κ ≈ 0.213) significa <span class="emphasis">giros suaves</span>, reduciendo:
+            Mayor <span class="emphasis">rapidez</span> → Mayor <span class="emphasis">fuerza centrífuga</span>
         </p>
-        <p style="color: #2ecc71;">
-            ✓ Estrés mecánico<br>
-            ✓ Fuerza centrífuga<br>
-            ✓ Riesgo de caída de piezas
+        <p id="eng-conclusion" style="color: #2ecc71; font-weight: 600;">
+            ✓ Diseño óptimo para movimiento suave
         </p>
+    </div>
+
+    <!-- Panel de descomposición de aceleración -->
+    <div class="accel-decomp">
+        <h3>🔬 Descomposición de a(t)</h3>
+        <div class="accel-component">
+            <div class="label">
+                <div class="color-dot" style="background: #e74c3c;"></div>
+                <span>a<sub>T</sub> (tangencial)</span>
+            </div>
+            <span class="value" id="aT-value" style="color: #e74c3c;">0.00</span>
+        </div>
+        <div class="accel-component">
+            <div class="label">
+                <div class="color-dot" style="background: #9b59b6;"></div>
+                <span>a<sub>N</sub> (normal/centrípeta)</span>
+            </div>
+            <span class="value" id="aN-value" style="color: #9b59b6;">0.00</span>
+        </div>
+        <div class="accel-component">
+            <div class="label">
+                <div class="color-dot" style="background: #ff4757;"></div>
+                <span>||a|| (total)</span>
+            </div>
+            <span class="value" id="a-total" style="color: #ff4757;">0.00</span>
+        </div>
+        <div class="formula-small">
+            ||a||² = a<sub>T</sub>² + a<sub>N</sub>²<br>
+            a<sub>N</sub> = κ · ||v||²
+        </div>
+    </div>
+
+    <!-- Panel de relación ||a|| y rapidez -->
+    <div class="relation-panel">
+        <h4>📈 Relación ||a|| vs Rapidez</h4>
+        <div class="relation-formula">
+            ||a|| ∝ ||v||²
+        </div>
+        <div style="margin-top: 10px;">
+            <span style="color: #888;">Rapidez ||v||:</span>
+            <div class="relation-bar">
+                <div class="relation-bar-fill" id="speed-bar" style="background: #2ecc71; width: 50%;"></div>
+            </div>
+            <span style="color: #888;">Aceleración ||a||:</span>
+            <div class="relation-bar">
+                <div class="relation-bar-fill" id="accel-bar" style="background: #ff4757; width: 50%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Círculo osculador info -->
+    <div class="osculating-label">
+        🔵 Radio de curvatura (ρ)<br>
+        <span class="radius-value" id="radius-value">4.69</span> unidades
+    </div>
+
+    <!-- Indicador de t₀ -->
+    <div class="t0-indicator" id="t0-indicator">
+        🎯 PUNTO t₀ = 6
+        <div class="sub">Punto de análisis de curvatura</div>
     </div>
 
     <!-- Controles -->
@@ -392,9 +621,12 @@
         // ===== CONFIGURACIÓN DE THREE.JS =====
         let scene, camera, renderer, controls;
         let trajectoryLine, positionPoint, velocityArrow, accelerationArrow;
+        let tangentialArrow, normalArrow, osculatingCircle;
+        let particles = [];
         let isPlaying = true;
         let currentT = 6;
         const tMin = 6, tMax = 20;
+        const t0 = 6; // Punto de análisis de curvatura
 
         // ===== FUNCIONES MATEMÁTICAS =====
         function r(t) {
@@ -427,6 +659,27 @@
             const cross = new THREE.Vector3().crossVectors(vel, acc);
             const curvatura = cross.length() / Math.pow(vel.length(), 3);
             return curvatura;
+        }
+
+        // Componentes de aceleración
+        function calcularComponentes(t) {
+            const vel = v(t);
+            const acc = a(t);
+            const velNorm = vel.clone().normalize();
+            
+            // Componente tangencial: a_T = (a · v̂) v̂
+            const aT_scalar = acc.dot(velNorm);
+            const aT_vector = velNorm.clone().multiplyScalar(aT_scalar);
+            
+            // Componente normal: a_N = a - a_T
+            const aN_vector = acc.clone().sub(aT_vector);
+            
+            return {
+                aT: aT_scalar,
+                aT_vec: aT_vector,
+                aN: aN_vector.length(),
+                aN_vec: aN_vector
+            };
         }
 
         // ===== INICIALIZACIÓN =====
@@ -469,6 +722,12 @@
             
             // Flechas de vectores
             createVectorArrows();
+            
+            // Círculo osculador
+            createOsculatingCircle();
+            
+            // Partículas de estela
+            createParticles();
 
             // Eventos
             window.addEventListener('resize', onWindowResize);
@@ -567,7 +826,7 @@
             );
             scene.add(velocityArrow);
 
-            // Flecha de aceleración (rojo)
+            // Flecha de aceleración total (rojo)
             accelerationArrow = new THREE.ArrowHelper(
                 new THREE.Vector3(1, 0, 0),
                 new THREE.Vector3(0, 0, 0),
@@ -577,12 +836,100 @@
                 0.1
             );
             scene.add(accelerationArrow);
+
+            // Flecha de aceleración tangencial (naranja)
+            tangentialArrow = new THREE.ArrowHelper(
+                new THREE.Vector3(1, 0, 0),
+                new THREE.Vector3(0, 0, 0),
+                1,
+                0xe74c3c,
+                0.15,
+                0.08
+            );
+            scene.add(tangentialArrow);
+
+            // Flecha de aceleración normal (morado)
+            normalArrow = new THREE.ArrowHelper(
+                new THREE.Vector3(1, 0, 0),
+                new THREE.Vector3(0, 0, 0),
+                1,
+                0x9b59b6,
+                0.15,
+                0.08
+            );
+            scene.add(normalArrow);
+        }
+
+        function createOsculatingCircle() {
+            const geometry = new THREE.RingGeometry(4.5, 4.7, 64);
+            const material = new THREE.MeshBasicMaterial({ 
+                color: 0x9b59b6, 
+                side: THREE.DoubleSide,
+                transparent: true,
+                opacity: 0.4
+            });
+            osculatingCircle = new THREE.Mesh(geometry, material);
+            scene.add(osculatingCircle);
+        }
+
+        function createParticles() {
+            const particleGeom = new THREE.SphereGeometry(0.03, 8, 8);
+            const particleMat = new THREE.MeshBasicMaterial({ 
+                color: 0x00d9ff,
+                transparent: true
+            });
+            
+            for (let i = 0; i < 30; i++) {
+                const particle = new THREE.Mesh(particleGeom, particleMat.clone());
+                particle.userData.offset = i * 0.15;
+                particle.userData.life = 1;
+                particles.push(particle);
+                scene.add(particle);
+            }
+        }
+
+        function updateParticles(t) {
+            particles.forEach((particle, i) => {
+                const particleT = t - particle.userData.offset;
+                if (particleT >= tMin && particleT <= tMax) {
+                    const pos = r(particleT);
+                    particle.position.copy(pos);
+                    particle.material.opacity = 1 - (particle.userData.offset / 5);
+                    particle.visible = true;
+                } else {
+                    particle.visible = false;
+                }
+            });
+        }
+
+        function updateOsculatingCircle(t) {
+            const pos = r(t);
+            const vel = v(t);
+            const acc = a(t);
+            const kappa = calcularCurvatura(t);
+            const radius = 1 / kappa;
+            
+            // Actualizar radio del círculo
+            osculatingCircle.geometry.dispose();
+            osculatingCircle.geometry = new THREE.RingGeometry(radius - 0.1, radius + 0.1, 64);
+            
+            // Calcular centro del círculo osculador
+            const velNorm = vel.clone().normalize();
+            const aN_vec = acc.clone().sub(velNorm.clone().multiplyScalar(acc.dot(velNorm)));
+            const normal = aN_vec.clone().normalize();
+            
+            const center = pos.clone().add(normal.multiplyScalar(radius));
+            osculatingCircle.position.copy(center);
+            
+            // Orientar el círculo perpendicular a la velocidad
+            osculatingCircle.lookAt(center.clone().add(vel));
         }
 
         function updateVectors(t) {
             const pos = r(t);
             const vel = v(t);
             const acc = a(t);
+            const componentes = calcularComponentes(t);
 
             // Actualizar posición del punto
             positionPoint.position.copy(pos);
@@ -594,12 +941,46 @@
             velocityArrow.setDirection(velNorm);
             velocityArrow.setLength(velLength, velLength * 0.2, velLength * 0.1);
 
-            // Actualizar flecha de aceleración
+            // Actualizar flecha de aceleración total
             const accNorm = acc.clone().normalize();
             const accLength = acc.length() * 0.5;
             accelerationArrow.position.copy(pos);
             accelerationArrow.setDirection(accNorm);
             accelerationArrow.setLength(accLength, accLength * 0.2, accLength * 0.1);
+
+            // Actualizar flecha tangencial
+            if (componentes.aT_vec.length() > 0.01) {
+                const aTNorm = componentes.aT_vec.clone().normalize();
+                const aTLength = Math.abs(componentes.aT) * 0.5;
+                tangentialArrow.position.copy(pos);
+                tangentialArrow.setDirection(aTNorm);
+                tangentialArrow.setLength(aTLength, aTLength * 0.2, aTLength * 0.1);
+                tangentialArrow.visible = true;
+            } else {
+                tangentialArrow.visible = false;
+            }
+
+            // Actualizar flecha normal
+            if (componentes.aN_vec.length() > 0.01) {
+                const aNNorm = componentes.aN_vec.clone().normalize();
+                const aNLength = componentes.aN * 0.5;
+                normalArrow.position.copy(pos);
+                normalArrow.setDirection(aNNorm);
+                normalArrow.setLength(aNLength, aNLength * 0.2, aNLength * 0.1);
+                normalArrow.visible = true;
+            } else {
+                normalArrow.visible = false;
+            }
+
+            // Actualizar círculo osculador y partículas
+            updateOsculatingCircle(t);
+            updateParticles(t);
+
+            // Calcular valores
+            const kappa = calcularCurvatura(t);
+            const radius = 1 / kappa;
+            const speedVal = vel.length();
+            const accelVal = acc.length();
 
             // Actualizar displays HTML
             document.getElementById('time-display').textContent = t.toFixed(2);
@@ -609,10 +990,41 @@
                 `(${(-2*Math.sin(t)).toFixed(2)}, ${(3*Math.cos(t)).toFixed(2)}, 1.00)`;
             document.getElementById('vec-a').textContent = 
                 `(${(-2*Math.cos(t)).toFixed(2)}, ${(-3*Math.sin(t)).toFixed(2)}, 0.00)`;
-            document.getElementById('speed-value').textContent = vel.length().toFixed(2);
-            
-            const kappa = calcularCurvatura(t);
+            document.getElementById('speed-value').textContent = speedVal.toFixed(2);
             document.getElementById('curvature-value').textContent = kappa.toFixed(3);
+            
+            // Nuevos displays
+            document.getElementById('aT-value').textContent = componentes.aT.toFixed(3);
+            document.getElementById('aN-value').textContent = componentes.aN.toFixed(3);
+            document.getElementById('a-total').textContent = accelVal.toFixed(3);
+            document.getElementById('radius-value').textContent = radius.toFixed(2);
+            
+            // Barras de relación
+            const maxSpeed = 4;
+            const maxAccel = 4;
+            document.getElementById('speed-bar').style.width = `${(speedVal / maxSpeed) * 100}%`;
+            document.getElementById('accel-bar').style.width = `${(accelVal / maxAccel) * 100}%`;
+
+            // Mostrar indicador de t₀
+            const t0Indicator = document.getElementById('t0-indicator');
+            if (Math.abs(t - t0) < 0.1) {
+                t0Indicator.classList.add('show');
+            } else {
+                t0Indicator.classList.remove('show');
+            }
+
+            // Actualizar conclusión de ingeniería
+            const engConclusion = document.getElementById('eng-conclusion');
+            if (kappa < 0.25) {
+                engConclusion.innerHTML = '✓ Curvatura baja → Diseño óptimo';
+                engConclusion.style.color = '#2ecc71';
+            } else if (kappa < 0.5) {
+                engConclusion.innerHTML = '⚠️ Curvatura media → Revisar tolerancias';
+                engConclusion.style.color = '#ffc107';
+            } else {
+                engConclusion.innerHTML = '⚠️ Curvatura alta → Riesgo de estrés';
+                engConclusion.style.color = '#ff4757';
+            }
         }
 
         function togglePlay() {
