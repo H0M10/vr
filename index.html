@@ -186,75 +186,75 @@
 
         /* Instrucciones AR en pantalla */
         .ar-instructions {
-            position: absolute;
-            bottom: 80px;
+            position: fixed;
+            bottom: 90px;
             left: 50%;
             transform: translateX(-50%);
             padding: 12px 24px;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 30px;
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(255, 255, 255, 0.9);
             font-size: 13px;
             text-align: center;
             pointer-events: none;
-            z-index: 100;
+            z-index: 99999;
             white-space: nowrap;
         }
 
-        /* Botón AR personalizado - SIEMPRE VISIBLE */
-        .ar-button-custom {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 16px 32px;
-            background: linear-gradient(135deg, #ff4757, #c0392b);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
+        /* Botón AR personalizado - FUERA del model-viewer */
+        .ar-button-fixed {
+            position: fixed !important;
+            bottom: 25px !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            padding: 18px 40px !important;
+            background: linear-gradient(135deg, #ff4757, #c0392b) !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 50px !important;
+            font-size: 18px !important;
+            font-weight: 700 !important;
+            cursor: pointer !important;
             box-shadow: 
-                0 4px 20px rgba(255, 71, 87, 0.5),
-                0 0 30px rgba(255, 71, 87, 0.3);
-            transition: all 0.3s ease;
-            z-index: 1000;
-            letter-spacing: 0.5px;
+                0 6px 25px rgba(255, 71, 87, 0.6),
+                0 0 40px rgba(255, 71, 87, 0.4) !important;
+            z-index: 999999 !important;
+            letter-spacing: 1px;
             text-transform: uppercase;
             animation: pulseButton 2s infinite;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        .ar-button-custom:hover {
-            transform: translateX(-50%) translateY(-3px);
+        .ar-button-fixed:hover {
+            transform: translateX(-50%) translateY(-3px) !important;
             box-shadow: 
-                0 8px 30px rgba(255, 71, 87, 0.6),
-                0 0 40px rgba(255, 71, 87, 0.4);
+                0 10px 35px rgba(255, 71, 87, 0.7),
+                0 0 50px rgba(255, 71, 87, 0.5) !important;
         }
 
-        .ar-button-custom:active {
-            transform: translateX(-50%) translateY(0);
+        .ar-button-fixed:active {
+            transform: translateX(-50%) translateY(0) !important;
         }
 
         @keyframes pulseButton {
             0%, 100% {
                 box-shadow: 
-                    0 4px 20px rgba(255, 71, 87, 0.5),
-                    0 0 30px rgba(255, 71, 87, 0.3);
+                    0 6px 25px rgba(255, 71, 87, 0.6),
+                    0 0 40px rgba(255, 71, 87, 0.4);
             }
             50% {
                 box-shadow: 
-                    0 4px 30px rgba(255, 71, 87, 0.7),
-                    0 0 50px rgba(255, 71, 87, 0.5);
+                    0 6px 35px rgba(255, 71, 87, 0.8),
+                    0 0 60px rgba(255, 71, 87, 0.6);
             }
         }
 
         /* Ocultar el botón AR nativo de model-viewer */
         model-viewer::part(default-ar-button) {
-            display: none;
+            display: none !important;
         }
 
         /* Responsive adjustments */
@@ -320,17 +320,17 @@
                 </div>
             </div>
         </button>
-
-        <!-- Instrucciones para el usuario -->
-        <div class="ar-instructions">
-            🖱️ Arrastra para rotar • 📍 Toca el punto rojo
-        </div>
-
-        <!-- Botón AR personalizado DENTRO del model-viewer -->
-        <button class="ar-button-custom" slot="ar-button">
-            📱 VER EN AR
-        </button>
     </model-viewer>
+
+    <!-- Instrucciones FUERA del model-viewer -->
+    <div class="ar-instructions">
+        🖱️ Arrastra para rotar • 📍 Toca el punto rojo
+    </div>
+
+    <!-- Botón AR FUERA del model-viewer para que siempre esté visible -->
+    <button class="ar-button-fixed" id="ar-btn">
+        📱 VER EN AR
+    </button>
 
     <script>
         // Manejar interacción táctil en dispositivos móviles
@@ -340,6 +340,20 @@
                 this.classList.toggle('active');
             });
         });
+
+        // Conectar botón externo con model-viewer AR
+        const arBtn = document.getElementById('ar-btn');
+        const modelViewer = document.getElementById('model-viewer');
+        
+        if (arBtn && modelViewer) {
+            arBtn.addEventListener('click', () => {
+                if (modelViewer.canActivateAR) {
+                    modelViewer.activateAR();
+                } else {
+                    alert('AR no disponible en este dispositivo. Prueba desde un teléfono Android o iPhone.');
+                }
+            });
+        }
     </script>
 </body>
 </html>
