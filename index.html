@@ -186,8 +186,8 @@
 
         /* Instrucciones AR en pantalla */
         .ar-instructions {
-            position: fixed;
-            bottom: 20px;
+            position: absolute;
+            bottom: 80px;
             left: 50%;
             transform: translateX(-50%);
             padding: 12px 24px;
@@ -201,44 +201,60 @@
             text-align: center;
             pointer-events: none;
             z-index: 100;
+            white-space: nowrap;
         }
 
-        /* Botón AR personalizado */
-        #ar-button {
-            position: fixed;
-            bottom: 100px;
-            right: 20px;
-            padding: 14px 20px;
-            background: linear-gradient(135deg, #ff4757, #ee5a6f);
+        /* Botón AR personalizado - SIEMPRE VISIBLE */
+        .ar-button-custom {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 16px 32px;
+            background: linear-gradient(135deg, #ff4757, #c0392b);
             color: white;
             border: none;
             border-radius: 50px;
-            font-size: 14px;
-            font-weight: 600;
+            font-size: 16px;
+            font-weight: 700;
             cursor: pointer;
             box-shadow: 
-                0 4px 15px rgba(255, 71, 87, 0.4),
-                0 0 20px rgba(255, 71, 87, 0.2);
-            transition: all 0.3s ease;
-            z-index: 101;
-            letter-spacing: 0.5px;
-            display: none;
-        }
-
-        #ar-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 
-                0 6px 20px rgba(255, 71, 87, 0.6),
+                0 4px 20px rgba(255, 71, 87, 0.5),
                 0 0 30px rgba(255, 71, 87, 0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            animation: pulseButton 2s infinite;
         }
 
-        #ar-button:active {
-            transform: translateY(0);
+        .ar-button-custom:hover {
+            transform: translateX(-50%) translateY(-3px);
+            box-shadow: 
+                0 8px 30px rgba(255, 71, 87, 0.6),
+                0 0 40px rgba(255, 71, 87, 0.4);
         }
 
-        /* Mostrar botón AR solo si está disponible */
-        model-viewer[ar] #ar-button {
-            display: block;
+        .ar-button-custom:active {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        @keyframes pulseButton {
+            0%, 100% {
+                box-shadow: 
+                    0 4px 20px rgba(255, 71, 87, 0.5),
+                    0 0 30px rgba(255, 71, 87, 0.3);
+            }
+            50% {
+                box-shadow: 
+                    0 4px 30px rgba(255, 71, 87, 0.7),
+                    0 0 50px rgba(255, 71, 87, 0.5);
+            }
+        }
+
+        /* Ocultar el botón AR nativo de model-viewer */
+        model-viewer::part(default-ar-button) {
+            display: none;
         }
 
         /* Responsive adjustments */
@@ -305,19 +321,15 @@
             </div>
         </button>
 
-        <!-- Botón AR personalizado -->
-        <button 
-            id="ar-button"
-            class="ar-button"
-            slot="ar-button"
-        >
-            📱 Ver en AR
-        </button>
-
         <!-- Instrucciones para el usuario -->
         <div class="ar-instructions">
-            📱 Toca "Ver en AR" • 🖱️ Arrastra para rotar
+            🖱️ Arrastra para rotar • 📍 Toca el punto rojo
         </div>
+
+        <!-- Botón AR personalizado DENTRO del model-viewer -->
+        <button class="ar-button-custom" slot="ar-button">
+            📱 VER EN AR
+        </button>
     </model-viewer>
 
     <script>
@@ -328,26 +340,6 @@
                 this.classList.toggle('active');
             });
         });
-
-        // Activar AR cuando se carga el modelo
-        const modelViewer = document.querySelector('model-viewer');
-        const arButton = document.querySelector('#ar-button');
-
-        if (modelViewer) {
-            // Mostrar botón AR cuando está disponible
-            modelViewer.addEventListener('ar-status-changed', (event) => {
-                if (event.detail.canActivateAR) {
-                    if (arButton) arButton.style.display = 'block';
-                }
-            });
-
-            // Activar AR al hacer clic
-            if (arButton) {
-                arButton.addEventListener('click', () => {
-                    modelViewer.activateAR();
-                });
-            }
-        }
     </script>
 </body>
 </html>
