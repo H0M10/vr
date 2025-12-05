@@ -488,9 +488,13 @@ function onTouchMove(e) {
         const deltaX = e.touches[0].clientX - lastTouchPos.x;
         const deltaY = e.touches[0].clientY - lastTouchPos.y;
         
-        const rotationSpeed = 0.015;
+        // Solo rotar en Y (horizontal) - más estable
+        const rotationSpeed = 0.012;
         scene.rotation.y += deltaX * rotationSpeed;
-        scene.rotation.x = Math.max(-Math.PI/3, Math.min(Math.PI/3, scene.rotation.x + deltaY * rotationSpeed));
+        
+        // Movimiento vertical en vez de rotación X (evita que se "caiga")
+        arPosition.y -= deltaY * 0.003;
+        scene.position.set(arPosition.x, arPosition.y, arPosition.z);
         
         lastTouchPos.x = e.touches[0].clientX;
         lastTouchPos.y = e.touches[0].clientY;
