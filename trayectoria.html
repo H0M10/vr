@@ -264,6 +264,33 @@
 <body>
     <div id="canvas-container"></div>
 
+    <!-- Navegación a Modelo AR -->
+    <a href="index.html" style="
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 999999;
+        background: linear-gradient(135deg, rgba(255, 71, 87, 0.3), rgba(192, 57, 43, 0.3));
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(255,255,255,0.3);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 25px;
+        text-decoration: none;
+        font-family: 'Segoe UI', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        transition: all 0.3s ease;
+    " onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 12px 40px rgba(255,71,87,0.4)'" 
+       onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 8px 32px rgba(0,0,0,0.3)'">
+        🤖 Ver Modelo AR
+    </a>
+
     <!-- Panel de información principal -->
     <div class="info-panel">
         <h1>📐 Análisis Dinámico - Nivel 10</h1>
