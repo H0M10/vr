@@ -406,20 +406,19 @@
         /* Panel de tiempo dinámico */
         .time-display {
             position: fixed;
-            bottom: 150px;
+            bottom: 160px;
             left: 50%;
             transform: translateX(-50%);
-            padding: 12px 30px;
-            background: rgba(0, 0, 0, 0.7);
+            padding: 15px 35px;
+            background: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(10px);
             border: 2px solid #00d9ff;
-            border-radius: 50px;
+            border-radius: 20px;
             color: white;
-            font-size: 18px;
-            font-weight: 700;
-            z-index: 999998;
             font-family: 'Courier New', monospace;
+            z-index: 999998;
             display: none;
+            text-align: center;
         }
 
         .time-display.show {
@@ -427,8 +426,102 @@
             animation: fadeIn 0.3s ease;
         }
 
-        .time-display span {
+        .time-display .time-main {
+            font-size: 28px;
+            font-weight: 700;
             color: #00d9ff;
+            margin-bottom: 10px;
+        }
+
+        .time-display .position-display {
+            display: flex;
+            gap: 15px;
+            font-size: 14px;
+            color: #aaa;
+        }
+
+        .time-display .position-display span {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        /* Panel de vectores en tiempo real */
+        .vectors-panel {
+            position: fixed;
+            bottom: 250px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 25px;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            border: 2px solid #ff4757;
+            border-radius: 16px;
+            color: white;
+            font-family: 'Courier New', monospace;
+            z-index: 999998;
+            display: none;
+            min-width: 320px;
+        }
+
+        .vectors-panel.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .vector-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .vector-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .vector-label {
+            color: #888;
+        }
+
+        .vector-value {
+            color: #00d9ff;
+            font-weight: 600;
+        }
+
+        /* Indicador de simulación */
+        .simulation-indicator {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 30px;
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.95), rgba(0, 153, 204, 0.95));
+            border-radius: 30px;
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            z-index: 999999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
+            box-shadow: 0 4px 25px rgba(0, 217, 255, 0.5);
+        }
+
+        .simulation-indicator.cinematic-ind {
+            background: linear-gradient(135deg, rgba(255, 71, 87, 0.95), rgba(192, 57, 43, 0.95));
+            box-shadow: 0 4px 25px rgba(255, 71, 87, 0.5);
+        }
+
+        .simulation-indicator.show {
+            opacity: 1;
+            visibility: visible;
+            animation: indicatorPulse 2s infinite;
+        }
+
+        @keyframes indicatorPulse {
+            0%, 100% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.02); }
         }
 
         @keyframes fadeIn {
@@ -550,7 +643,7 @@
     </div>
 
     <!-- Panel de información del proyecto -->
-    <div class="project-info">
+    <div class="project-info" id="project-info">
         <h2>🦾 Brazo Robótico</h2>
         <p><strong>Proyecto:</strong> Cálculo Vectorial</p>
         <p><strong>Nivel:</strong> 10 - Análisis Dinámico</p>
@@ -559,62 +652,92 @@
         </div>
     </div>
 
-    <!-- Display de tiempo dinámico -->
+    <!-- Display de tiempo y posición dinámico -->
     <div class="time-display" id="time-display">
-        t = <span id="current-time">6.00</span>s
+        <div class="time-main">t = <span id="current-time">6.00</span>s</div>
+        <div class="position-display">
+            <div>x = <span id="pos-x">1.92</span></div>
+            <div>y = <span id="pos-y">-0.56</span></div>
+            <div>z = <span id="pos-z">6.00</span></div>
+        </div>
+    </div>
+
+    <!-- Panel de vectores en tiempo real -->
+    <div class="vectors-panel" id="vectors-panel">
+        <div class="vector-item">
+            <span class="vector-label">📍 r(t):</span>
+            <span class="vector-value" id="vec-r">(1.92, -0.56, 6.00)</span>
+        </div>
+        <div class="vector-item">
+            <span class="vector-label">🚀 v(t):</span>
+            <span class="vector-value" id="vec-v">(-0.56, 2.88, 1.00)</span>
+        </div>
+        <div class="vector-item">
+            <span class="vector-label">⚡ a(t):</span>
+            <span class="vector-value" id="vec-a">(-1.92, 0.56, 0.00)</span>
+        </div>
     </div>
 
     <!-- Panel de control de animaciones -->
     <div class="animation-controls" id="animation-panel">
-        <button class="control-btn" id="btn-trajectory" title="Simular Trayectoria r(t)">
+        <button class="control-btn" id="btn-trajectory" title="▶ Simular Trayectoria r(t)">
             📈
         </button>
-        <button class="control-btn" id="btn-cinematic" title="Modo Cinemático">
+        <button class="control-btn" id="btn-cinematic" title="🎬 Recorrido Cinemático">
             🎬
         </button>
-        <button class="control-btn" id="btn-play-anim" title="Play/Pause">
-            ▶️
-        </button>
-        <button class="control-btn" id="btn-reset" title="Resetear">
+        <button class="control-btn" id="btn-reset" title="🔄 Resetear">
             🔄
         </button>
     </div>
 
+    <!-- Indicador de simulación activa -->
+    <div class="simulation-indicator" id="simulation-indicator">
+        📈 SIMULACIÓN r(t) ACTIVA
+    </div>
+
     <!-- Indicador de cinemática activa -->
-    <div class="cinematic-indicator" id="cinematic-indicator">
+    <div class="simulation-indicator cinematic-ind" id="cinematic-indicator">
         🎬 MODO CINEMÁTICO
     </div>
 
-    <!-- Indicador de simulación de trayectoria -->
-    <div class="cinematic-indicator" id="trajectory-indicator" style="background: linear-gradient(135deg, rgba(0, 217, 255, 0.9), rgba(0, 153, 204, 0.9));">
-        📈 SIMULANDO r(t) | t: 6s → 20s
-    </div>
-
-    <!-- Botón AR FUERA del model-viewer para que siempre esté visible -->
+    <!-- Botón AR -->
     <button class="ar-button-fixed" id="ar-btn">
         📱 VER EN AR
     </button>
 
     <script>
+        // ===== ELEMENTOS DEL DOM =====
         const modelViewer = document.getElementById('model-viewer');
         const arBtn = document.getElementById('ar-btn');
         const btnCinematic = document.getElementById('btn-cinematic');
         const btnTrajectory = document.getElementById('btn-trajectory');
-        const btnPlayAnim = document.getElementById('btn-play-anim');
         const btnReset = document.getElementById('btn-reset');
+        const simulationIndicator = document.getElementById('simulation-indicator');
         const cinematicIndicator = document.getElementById('cinematic-indicator');
-        const trajectoryIndicator = document.getElementById('trajectory-indicator');
         const timeDisplay = document.getElementById('time-display');
-        const currentTimeSpan = document.getElementById('current-time');
+        const vectorsPanel = document.getElementById('vectors-panel');
         
-        let cinematicMode = false;
+        // Elementos de display
+        const currentTimeSpan = document.getElementById('current-time');
+        const posX = document.getElementById('pos-x');
+        const posY = document.getElementById('pos-y');
+        const posZ = document.getElementById('pos-z');
+        const vecR = document.getElementById('vec-r');
+        const vecV = document.getElementById('vec-v');
+        const vecA = document.getElementById('vec-a');
+        
+        // Estados
         let trajectoryMode = false;
-        let cinematicInterval = null;
+        let cinematicMode = false;
         let trajectoryInterval = null;
-        let animationPlaying = false;
+        let cinematicInterval = null;
 
         // ===== HOTSPOT INTERACCIÓN =====
         document.querySelectorAll('.hotspot').forEach(hotspot => {
+            hotspot.addEventListener('click', function(e) {
+                this.classList.toggle('active');
+            });
             hotspot.addEventListener('touchstart', function(e) {
                 e.preventDefault();
                 this.classList.toggle('active');
@@ -627,135 +750,150 @@
                 if (modelViewer.canActivateAR) {
                     modelViewer.activateAR();
                 } else {
-                    alert('AR no disponible en este dispositivo. Prueba desde un teléfono Android o iPhone.');
+                    alert('📱 AR no disponible.\n\nPrueba desde un teléfono Android o iPhone.');
                 }
             });
         }
 
-        // ===== DETECTAR ANIMACIONES DEL MODELO =====
-        modelViewer.addEventListener('load', () => {
-            const animations = modelViewer.availableAnimations;
-            console.log('Animaciones disponibles:', animations);
-            
-            if (animations && animations.length > 0) {
-                modelViewer.animationName = animations[0];
-                modelViewer.play();
-                animationPlaying = true;
-                btnPlayAnim.textContent = '⏸️';
-            }
-        });
+        // ===== FUNCIONES MATEMÁTICAS DEL PROYECTO =====
+        // r(t) = 2cos(t)î + 3sen(t)ĵ + tk̂
+        function calcularPosicion(t) {
+            return {
+                x: 2 * Math.cos(t),
+                y: 3 * Math.sin(t),
+                z: t
+            };
+        }
 
-        // ===== BOTÓN PLAY/PAUSE ANIMACIÓN =====
-        btnPlayAnim.addEventListener('click', () => {
-            if (animationPlaying) {
-                modelViewer.pause();
-                btnPlayAnim.textContent = '▶️';
-                animationPlaying = false;
-            } else {
-                modelViewer.play();
-                btnPlayAnim.textContent = '⏸️';
-                animationPlaying = true;
-            }
-        });
+        // v(t) = r'(t) = -2sen(t)î + 3cos(t)ĵ + k̂
+        function calcularVelocidad(t) {
+            return {
+                x: -2 * Math.sin(t),
+                y: 3 * Math.cos(t),
+                z: 1
+            };
+        }
+
+        // a(t) = v'(t) = -2cos(t)î - 3sen(t)ĵ
+        function calcularAceleracion(t) {
+            return {
+                x: -2 * Math.cos(t),
+                y: -3 * Math.sin(t),
+                z: 0
+            };
+        }
+
+        // Formatear vector para display
+        function formatVector(v) {
+            return `(${v.x.toFixed(2)}, ${v.y.toFixed(2)}, ${v.z.toFixed(2)})`;
+        }
 
         // ===== SIMULACIÓN DE TRAYECTORIA r(t) =====
-        // r(t) = 2cos(t)i + 3sen(t)j + tk
-        // t va de 6 a 20 segundos
         btnTrajectory.addEventListener('click', () => {
+            if (cinematicMode) stopCinematic();
+            
             trajectoryMode = !trajectoryMode;
             btnTrajectory.classList.toggle('active', trajectoryMode);
             
             if (trajectoryMode) {
                 startTrajectorySimulation();
-                trajectoryIndicator.classList.add('show');
-                timeDisplay.classList.add('show');
             } else {
-                stopTrajectorySimulation();
-                trajectoryIndicator.classList.remove('show');
-                timeDisplay.classList.remove('show');
+                stopTrajectory();
             }
         });
 
         function startTrajectorySimulation() {
             modelViewer.autoRotate = false;
-            let t = 6; // Tiempo inicial
-            const tMax = 20; // Tiempo final
-            const tStep = 0.1; // Incremento de tiempo
+            simulationIndicator.classList.add('show');
+            timeDisplay.classList.add('show');
+            vectorsPanel.classList.add('show');
             
-            function updatePosition() {
-                if (!trajectoryMode || t > tMax) {
-                    if (t > tMax) {
-                        t = 6; // Reiniciar ciclo
-                    }
-                    if (!trajectoryMode) return;
+            let t = 6.0; // Tiempo inicial (como en tu proyecto)
+            const tMax = 20.0; // Tiempo final
+            const tStep = 0.05; // Incremento más suave
+            
+            function updateSimulation() {
+                if (!trajectoryMode) return;
+                
+                // Calcular vectores
+                const r = calcularPosicion(t);
+                const v = calcularVelocidad(t);
+                const a = calcularAceleracion(t);
+                
+                // Actualizar displays
+                currentTimeSpan.textContent = t.toFixed(2);
+                posX.textContent = r.x.toFixed(2);
+                posY.textContent = r.y.toFixed(2);
+                posZ.textContent = r.z.toFixed(2);
+                
+                vecR.textContent = formatVector(r);
+                vecV.textContent = formatVector(v);
+                vecA.textContent = formatVector(a);
+                
+                // Mover cámara siguiendo la trayectoria helicoidal
+                // Convertimos la posición r(t) a ángulos de cámara
+                const theta = (t * 25) % 360; // Rotación azimutal
+                const phi = 70 + Math.sin(t * 0.5) * 15; // Oscilación en elevación
+                const dist = 2.2 + Math.cos(t * 0.3) * 0.3; // Zoom pulsante
+                
+                modelViewer.cameraOrbit = `${theta}deg ${phi}deg ${dist}m`;
+                
+                // Incrementar tiempo
+                t += tStep;
+                
+                // Reiniciar ciclo cuando llegue al máximo
+                if (t > tMax) {
+                    t = 6.0;
                 }
                 
-                // Calcular posición r(t) = 2cos(t)i + 3sen(t)j + tk
-                const x = 2 * Math.cos(t);
-                const y = 3 * Math.sin(t);
-                const z = t;
-                
-                // Actualizar display de tiempo
-                currentTimeSpan.textContent = t.toFixed(2);
-                
-                // Mover la cámara para simular el seguimiento de la trayectoria
-                // Convertimos las coordenadas a ángulos de cámara
-                const angle = (t * 30) % 360; // Rotación basada en t
-                const height = 60 + (t - 6) * 1.5; // Altura que aumenta con t
-                const distance = 2.5 - (t - 6) * 0.05; // Acercamiento gradual
-                
-                modelViewer.cameraOrbit = `${angle}deg ${height}deg ${Math.max(distance, 1.5)}m`;
-                
-                t += tStep;
-                trajectoryInterval = setTimeout(updatePosition, 100);
+                trajectoryInterval = requestAnimationFrame(() => {
+                    setTimeout(updateSimulation, 50);
+                });
             }
             
-            updatePosition();
+            updateSimulation();
         }
 
-        function stopTrajectorySimulation() {
+        function stopTrajectory() {
+            trajectoryMode = false;
+            btnTrajectory.classList.remove('active');
+            simulationIndicator.classList.remove('show');
+            timeDisplay.classList.remove('show');
+            vectorsPanel.classList.remove('show');
+            
             if (trajectoryInterval) {
-                clearTimeout(trajectoryInterval);
+                cancelAnimationFrame(trajectoryInterval);
                 trajectoryInterval = null;
             }
             modelViewer.autoRotate = true;
         }
 
-        // ===== MODO CINEMÁTICO (Cámara épica) =====
+        // ===== MODO CINEMÁTICO =====
         btnCinematic.addEventListener('click', () => {
+            if (trajectoryMode) stopTrajectory();
+            
             cinematicMode = !cinematicMode;
             btnCinematic.classList.toggle('active', cinematicMode);
             
             if (cinematicMode) {
-                // Detener simulación de trayectoria si está activa
-                if (trajectoryMode) {
-                    trajectoryMode = false;
-                    btnTrajectory.classList.remove('active');
-                    trajectoryIndicator.classList.remove('show');
-                    timeDisplay.classList.remove('show');
-                    stopTrajectorySimulation();
-                }
-                startCinematicMode();
-                cinematicIndicator.classList.add('show');
+                startCinematic();
             } else {
-                stopCinematicMode();
-                cinematicIndicator.classList.remove('show');
+                stopCinematic();
             }
         });
 
-        function startCinematicMode() {
+        function startCinematic() {
             modelViewer.autoRotate = false;
+            cinematicIndicator.classList.add('show');
             
-            const cinematicSequence = [
-                { orbit: '0deg 90deg 3m', duration: 2000 },
-                { orbit: '45deg 70deg 2m', duration: 2000 },
-                { orbit: '90deg 80deg 1.5m', duration: 2000 },
-                { orbit: '135deg 60deg 2.5m', duration: 2000 },
-                { orbit: '180deg 85deg 2m', duration: 2000 },
-                { orbit: '225deg 75deg 1.8m', duration: 2000 },
-                { orbit: '270deg 90deg 2.2m', duration: 2000 },
-                { orbit: '315deg 65deg 2m', duration: 2000 },
-                { orbit: '360deg 80deg 2.5m', duration: 2000 },
+            const sequence = [
+                { orbit: '0deg 80deg 2.5m', duration: 1500 },
+                { orbit: '60deg 70deg 2m', duration: 1500 },
+                { orbit: '120deg 85deg 1.8m', duration: 1500 },
+                { orbit: '180deg 75deg 2.2m', duration: 1500 },
+                { orbit: '240deg 65deg 1.5m', duration: 1500 },
+                { orbit: '300deg 80deg 2m', duration: 1500 },
+                { orbit: '360deg 75deg 2.5m', duration: 1500 },
             ];
             
             let step = 0;
@@ -763,17 +901,20 @@
             function nextStep() {
                 if (!cinematicMode) return;
                 
-                const current = cinematicSequence[step];
-                modelViewer.cameraOrbit = current.orbit;
+                modelViewer.cameraOrbit = sequence[step].orbit;
+                step = (step + 1) % sequence.length;
                 
-                step = (step + 1) % cinematicSequence.length;
-                cinematicInterval = setTimeout(nextStep, current.duration);
+                cinematicInterval = setTimeout(nextStep, sequence[step].duration);
             }
             
             nextStep();
         }
 
-        function stopCinematicMode() {
+        function stopCinematic() {
+            cinematicMode = false;
+            btnCinematic.classList.remove('active');
+            cinematicIndicator.classList.remove('show');
+            
             if (cinematicInterval) {
                 clearTimeout(cinematicInterval);
                 cinematicInterval = null;
@@ -783,50 +924,24 @@
 
         // ===== BOTÓN RESET =====
         btnReset.addEventListener('click', () => {
-            // Detener todo
-            if (cinematicMode) {
-                cinematicMode = false;
-                btnCinematic.classList.remove('active');
-                cinematicIndicator.classList.remove('show');
-                stopCinematicMode();
-            }
-            if (trajectoryMode) {
-                trajectoryMode = false;
-                btnTrajectory.classList.remove('active');
-                trajectoryIndicator.classList.remove('show');
-                timeDisplay.classList.remove('show');
-                stopTrajectorySimulation();
-            }
-            
+            stopTrajectory();
+            stopCinematic();
             modelViewer.cameraOrbit = '0deg 75deg 2.5m';
             modelViewer.autoRotate = true;
-            
-            if (modelViewer.availableAnimations?.length > 0) {
-                modelViewer.currentTime = 0;
-                modelViewer.play();
-                animationPlaying = true;
-                btnPlayAnim.textContent = '⏸️';
+        });
+
+        // ===== DETENER AL INTERACTUAR MANUALMENTE =====
+        modelViewer.addEventListener('camera-change', (e) => {
+            if (e.detail.source === 'user-interaction') {
+                if (trajectoryMode) stopTrajectory();
+                if (cinematicMode) stopCinematic();
             }
         });
 
-        // ===== DETENER AL INTERACTUAR =====
-        modelViewer.addEventListener('camera-change', (e) => {
-            if (e.detail.source === 'user-interaction') {
-                if (cinematicMode) {
-                    cinematicMode = false;
-                    btnCinematic.classList.remove('active');
-                    cinematicIndicator.classList.remove('show');
-                    stopCinematicMode();
-                }
-                if (trajectoryMode) {
-                    trajectoryMode = false;
-                    btnTrajectory.classList.remove('active');
-                    trajectoryIndicator.classList.remove('show');
-                    timeDisplay.classList.remove('show');
-                    stopTrajectorySimulation();
-                }
-            }
-        });
+        // ===== INICIALIZACIÓN =====
+        console.log('🦾 Brazo Robótico - Simulador de Trayectoria');
+        console.log('📐 r(t) = 2cos(t)î + 3sen(t)ĵ + tk̂');
+        console.log('🎯 Curvatura κ ≈ 0.213');
     </script>
 </body>
 </html>
