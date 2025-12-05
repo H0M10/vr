@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Experiencia WebAR - Robot 3D</title>
+    <title>Brazo Robótico - Análisis Vectorial | Cálculo de Varias Variables</title>
     
     <!-- Importar model-viewer desde CDN oficial -->
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
@@ -327,6 +327,115 @@
             50% { box-shadow: 0 4px 35px rgba(255, 71, 87, 0.8); }
         }
 
+        /* Hotspot secundario - color diferente */
+        .hotspot-time {
+            background: linear-gradient(145deg, #00d9ff, #0099cc) !important;
+            box-shadow: 
+                0 0 15px rgba(0, 217, 255, 0.6),
+                0 0 30px rgba(0, 217, 255, 0.3),
+                0 4px 15px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        .hotspot-time:hover {
+            box-shadow: 
+                0 0 25px rgba(0, 217, 255, 0.8),
+                0 0 50px rgba(0, 217, 255, 0.4),
+                0 6px 20px rgba(0, 0, 0, 0.4) !important;
+        }
+
+        /* Info card más grande para fórmulas */
+        .info-card {
+            min-width: 280px !important;
+        }
+
+        .info-card strong {
+            color: #00d9ff;
+        }
+
+        .data-item.separator {
+            height: 1px;
+            background: rgba(255,255,255,0.2);
+            margin: 12px 0;
+        }
+
+        .data-item.separator::before {
+            display: none;
+        }
+
+        /* Panel de información del proyecto */
+        .project-info {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            color: white;
+            z-index: 999998;
+            max-width: 280px;
+        }
+
+        .project-info h2 {
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #00d9ff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .project-info p {
+            font-size: 12px;
+            opacity: 0.9;
+            line-height: 1.4;
+            margin-bottom: 5px;
+        }
+
+        .project-info .formula {
+            font-family: 'Courier New', monospace;
+            background: rgba(0, 217, 255, 0.2);
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 11px;
+            border-left: 3px solid #00d9ff;
+        }
+
+        /* Panel de tiempo dinámico */
+        .time-display {
+            position: fixed;
+            bottom: 150px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 30px;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            border: 2px solid #00d9ff;
+            border-radius: 50px;
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            z-index: 999998;
+            font-family: 'Courier New', monospace;
+            display: none;
+        }
+
+        .time-display.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .time-display span {
+            color: #00d9ff;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .info-card {
@@ -385,14 +494,51 @@
             aria-label="Ver información de análisis"
             onclick="this.classList.toggle('active')"
         >
-            <!-- Cuadro de información Glassmorphism -->
+            <!-- Cuadro de información Glassmorphism - DATOS REALES DEL PROYECTO -->
             <div class="info-card">
-                <h3>🔬 Análisis Nivel 10</h3>
+                <h3>📊 Análisis Dinámico (Nivel 10)</h3>
                 <div class="data-item">
-                    Curvatura (κ) ≈ <span class="value">&nbsp;0.213</span>
+                    <strong>r(t)</strong> = 2cos(t)î + 3sen(t)ĵ + tk̂
                 </div>
                 <div class="data-item">
-                    Trayectoria: <span class="status-safe">&nbsp;Suave/Segura</span>
+                    <strong>v(t)</strong> = -2sen(t)î + 3cos(t)ĵ + k̂
+                </div>
+                <div class="data-item">
+                    <strong>a(t)</strong> = -2cos(t)î - 3sen(t)ĵ
+                </div>
+                <div class="data-item separator"></div>
+                <div class="data-item">
+                    Curvatura (κ) ≈ <span class="value">0.213</span>
+                </div>
+                <div class="data-item">
+                    Trayectoria: <span class="status-safe">Suave/Segura ✓</span>
+                </div>
+            </div>
+        </button>
+
+        <!-- Segundo Hotspot - Posición en tiempo -->
+        <button 
+            class="hotspot hotspot-time" 
+            slot="hotspot-position" 
+            data-position="0.3m 0.8m 0.2m" 
+            data-normal="1m 0m 0m"
+            aria-label="Ver posición en el tiempo"
+            onclick="this.classList.toggle('active')"
+        >
+            <div class="info-card info-card-position">
+                <h3>📍 Posición r(t)</h3>
+                <div class="data-item">
+                    <strong>t = 6s:</strong> (1.989, 0.313, 6)
+                </div>
+                <div class="data-item">
+                    <strong>t = 20s:</strong> (1.879, 1.026, 20)
+                </div>
+                <div class="data-item separator"></div>
+                <div class="data-item">
+                    Δr = <span class="value">(-0.11, 0.713, 14)</span>
+                </div>
+                <div class="data-item">
+                    ||Δr|| = <span class="value">14.01 unidades</span>
                 </div>
             </div>
         </button>
@@ -400,18 +546,36 @@
 
     <!-- Instrucciones FUERA del model-viewer -->
     <div class="ar-instructions">
-        🖱️ Arrastra para rotar • 📍 Toca el punto rojo
+        🖱️ Arrastra para rotar • 📍 Toca los puntos de colores
+    </div>
+
+    <!-- Panel de información del proyecto -->
+    <div class="project-info">
+        <h2>🦾 Brazo Robótico</h2>
+        <p><strong>Proyecto:</strong> Cálculo Vectorial</p>
+        <p><strong>Nivel:</strong> 10 - Análisis Dinámico</p>
+        <div class="formula">
+            r(t) = 2cos(t)î + 3sen(t)ĵ + tk̂
+        </div>
+    </div>
+
+    <!-- Display de tiempo dinámico -->
+    <div class="time-display" id="time-display">
+        t = <span id="current-time">6.00</span>s
     </div>
 
     <!-- Panel de control de animaciones -->
     <div class="animation-controls" id="animation-panel">
-        <button class="control-btn" id="btn-cinematic" title="Cinemática">
+        <button class="control-btn" id="btn-trajectory" title="Simular Trayectoria r(t)">
+            📈
+        </button>
+        <button class="control-btn" id="btn-cinematic" title="Modo Cinemático">
             🎬
         </button>
-        <button class="control-btn" id="btn-play-anim" title="Play/Pause Animación">
+        <button class="control-btn" id="btn-play-anim" title="Play/Pause">
             ▶️
         </button>
-        <button class="control-btn" id="btn-reset" title="Resetear Vista">
+        <button class="control-btn" id="btn-reset" title="Resetear">
             🔄
         </button>
     </div>
@@ -419,6 +583,11 @@
     <!-- Indicador de cinemática activa -->
     <div class="cinematic-indicator" id="cinematic-indicator">
         🎬 MODO CINEMÁTICO
+    </div>
+
+    <!-- Indicador de simulación de trayectoria -->
+    <div class="cinematic-indicator" id="trajectory-indicator" style="background: linear-gradient(135deg, rgba(0, 217, 255, 0.9), rgba(0, 153, 204, 0.9));">
+        📈 SIMULANDO r(t) | t: 6s → 20s
     </div>
 
     <!-- Botón AR FUERA del model-viewer para que siempre esté visible -->
@@ -430,14 +599,19 @@
         const modelViewer = document.getElementById('model-viewer');
         const arBtn = document.getElementById('ar-btn');
         const btnCinematic = document.getElementById('btn-cinematic');
+        const btnTrajectory = document.getElementById('btn-trajectory');
         const btnPlayAnim = document.getElementById('btn-play-anim');
         const btnReset = document.getElementById('btn-reset');
         const cinematicIndicator = document.getElementById('cinematic-indicator');
+        const trajectoryIndicator = document.getElementById('trajectory-indicator');
+        const timeDisplay = document.getElementById('time-display');
+        const currentTimeSpan = document.getElementById('current-time');
         
         let cinematicMode = false;
+        let trajectoryMode = false;
         let cinematicInterval = null;
+        let trajectoryInterval = null;
         let animationPlaying = false;
-        let currentAngle = 0;
 
         // ===== HOTSPOT INTERACCIÓN =====
         document.querySelectorAll('.hotspot').forEach(hotspot => {
@@ -464,14 +638,10 @@
             console.log('Animaciones disponibles:', animations);
             
             if (animations && animations.length > 0) {
-                // Si hay animaciones, reproducir la primera
                 modelViewer.animationName = animations[0];
                 modelViewer.play();
                 animationPlaying = true;
                 btnPlayAnim.textContent = '⏸️';
-                console.log('Reproduciendo animación:', animations[0]);
-            } else {
-                console.log('No hay animaciones en el modelo. Usando efectos de cámara.');
             }
         });
 
@@ -488,12 +658,83 @@
             }
         });
 
+        // ===== SIMULACIÓN DE TRAYECTORIA r(t) =====
+        // r(t) = 2cos(t)i + 3sen(t)j + tk
+        // t va de 6 a 20 segundos
+        btnTrajectory.addEventListener('click', () => {
+            trajectoryMode = !trajectoryMode;
+            btnTrajectory.classList.toggle('active', trajectoryMode);
+            
+            if (trajectoryMode) {
+                startTrajectorySimulation();
+                trajectoryIndicator.classList.add('show');
+                timeDisplay.classList.add('show');
+            } else {
+                stopTrajectorySimulation();
+                trajectoryIndicator.classList.remove('show');
+                timeDisplay.classList.remove('show');
+            }
+        });
+
+        function startTrajectorySimulation() {
+            modelViewer.autoRotate = false;
+            let t = 6; // Tiempo inicial
+            const tMax = 20; // Tiempo final
+            const tStep = 0.1; // Incremento de tiempo
+            
+            function updatePosition() {
+                if (!trajectoryMode || t > tMax) {
+                    if (t > tMax) {
+                        t = 6; // Reiniciar ciclo
+                    }
+                    if (!trajectoryMode) return;
+                }
+                
+                // Calcular posición r(t) = 2cos(t)i + 3sen(t)j + tk
+                const x = 2 * Math.cos(t);
+                const y = 3 * Math.sin(t);
+                const z = t;
+                
+                // Actualizar display de tiempo
+                currentTimeSpan.textContent = t.toFixed(2);
+                
+                // Mover la cámara para simular el seguimiento de la trayectoria
+                // Convertimos las coordenadas a ángulos de cámara
+                const angle = (t * 30) % 360; // Rotación basada en t
+                const height = 60 + (t - 6) * 1.5; // Altura que aumenta con t
+                const distance = 2.5 - (t - 6) * 0.05; // Acercamiento gradual
+                
+                modelViewer.cameraOrbit = `${angle}deg ${height}deg ${Math.max(distance, 1.5)}m`;
+                
+                t += tStep;
+                trajectoryInterval = setTimeout(updatePosition, 100);
+            }
+            
+            updatePosition();
+        }
+
+        function stopTrajectorySimulation() {
+            if (trajectoryInterval) {
+                clearTimeout(trajectoryInterval);
+                trajectoryInterval = null;
+            }
+            modelViewer.autoRotate = true;
+        }
+
         // ===== MODO CINEMÁTICO (Cámara épica) =====
         btnCinematic.addEventListener('click', () => {
             cinematicMode = !cinematicMode;
             btnCinematic.classList.toggle('active', cinematicMode);
             
             if (cinematicMode) {
+                // Detener simulación de trayectoria si está activa
+                if (trajectoryMode) {
+                    trajectoryMode = false;
+                    btnTrajectory.classList.remove('active');
+                    trajectoryIndicator.classList.remove('show');
+                    timeDisplay.classList.remove('show');
+                    stopTrajectorySimulation();
+                }
                 startCinematicMode();
                 cinematicIndicator.classList.add('show');
             } else {
@@ -503,21 +744,18 @@
         });
 
         function startCinematicMode() {
-            // Desactivar auto-rotate para control manual
             modelViewer.autoRotate = false;
-            currentAngle = 0;
             
-            // Secuencia cinemática
             const cinematicSequence = [
-                { orbit: '0deg 90deg 3m', duration: 2000 },      // Vista frontal alejada
-                { orbit: '45deg 70deg 2m', duration: 2000 },     // Diagonal arriba
-                { orbit: '90deg 80deg 1.5m', duration: 2000 },   // Lateral cercano
-                { orbit: '135deg 60deg 2.5m', duration: 2000 },  // Diagonal trasera
-                { orbit: '180deg 85deg 2m', duration: 2000 },    // Vista trasera
-                { orbit: '225deg 75deg 1.8m', duration: 2000 },  // Otra diagonal
-                { orbit: '270deg 90deg 2.2m', duration: 2000 },  // Otro lateral
-                { orbit: '315deg 65deg 2m', duration: 2000 },    // Diagonal
-                { orbit: '360deg 80deg 2.5m', duration: 2000 },  // Vuelta completa
+                { orbit: '0deg 90deg 3m', duration: 2000 },
+                { orbit: '45deg 70deg 2m', duration: 2000 },
+                { orbit: '90deg 80deg 1.5m', duration: 2000 },
+                { orbit: '135deg 60deg 2.5m', duration: 2000 },
+                { orbit: '180deg 85deg 2m', duration: 2000 },
+                { orbit: '225deg 75deg 1.8m', duration: 2000 },
+                { orbit: '270deg 90deg 2.2m', duration: 2000 },
+                { orbit: '315deg 65deg 2m', duration: 2000 },
+                { orbit: '360deg 80deg 2.5m', duration: 2000 },
             ];
             
             let step = 0;
@@ -529,7 +767,6 @@
                 modelViewer.cameraOrbit = current.orbit;
                 
                 step = (step + 1) % cinematicSequence.length;
-                
                 cinematicInterval = setTimeout(nextStep, current.duration);
             }
             
@@ -546,19 +783,24 @@
 
         // ===== BOTÓN RESET =====
         btnReset.addEventListener('click', () => {
-            // Detener cinemática si está activa
+            // Detener todo
             if (cinematicMode) {
                 cinematicMode = false;
                 btnCinematic.classList.remove('active');
                 cinematicIndicator.classList.remove('show');
                 stopCinematicMode();
             }
+            if (trajectoryMode) {
+                trajectoryMode = false;
+                btnTrajectory.classList.remove('active');
+                trajectoryIndicator.classList.remove('show');
+                timeDisplay.classList.remove('show');
+                stopTrajectorySimulation();
+            }
             
-            // Resetear cámara
             modelViewer.cameraOrbit = '0deg 75deg 2.5m';
             modelViewer.autoRotate = true;
             
-            // Reiniciar animación si existe
             if (modelViewer.availableAnimations?.length > 0) {
                 modelViewer.currentTime = 0;
                 modelViewer.play();
@@ -567,14 +809,22 @@
             }
         });
 
-        // ===== DETENER CINEMÁTICA AL INTERACTUAR =====
+        // ===== DETENER AL INTERACTUAR =====
         modelViewer.addEventListener('camera-change', (e) => {
-            // Si el usuario mueve la cámara manualmente, detener cinemática
-            if (e.detail.source === 'user-interaction' && cinematicMode) {
-                cinematicMode = false;
-                btnCinematic.classList.remove('active');
-                cinematicIndicator.classList.remove('show');
-                stopCinematicMode();
+            if (e.detail.source === 'user-interaction') {
+                if (cinematicMode) {
+                    cinematicMode = false;
+                    btnCinematic.classList.remove('active');
+                    cinematicIndicator.classList.remove('show');
+                    stopCinematicMode();
+                }
+                if (trajectoryMode) {
+                    trajectoryMode = false;
+                    btnTrajectory.classList.remove('active');
+                    trajectoryIndicator.classList.remove('show');
+                    timeDisplay.classList.remove('show');
+                    stopTrajectorySimulation();
+                }
             }
         });
     </script>
